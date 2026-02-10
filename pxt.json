@@ -1,0 +1,27 @@
+{
+    "name": "hibiscus",
+    "description": "",
+    "dependencies": {
+        "device": "*",
+        "Color Fading": "github:jwunderl/pxt-color#v0.2.3",
+        "Hyacinth": "pub:71854-44329-94148-00872"
+    },
+    "files": [
+        "main.ts",
+        "README.md",
+        "assets.json",
+        "silly.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "target": "2.0.63",
+        "targetId": "arcade"
+    },
+    "supportedTargets": [
+        "arcade"
+    ],
+    "preferredEditor": "tsprj",
+    "languageRestriction": "javascript-only"
+}
