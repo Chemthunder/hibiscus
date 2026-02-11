@@ -36,7 +36,6 @@ namespace menuAssets {
     `;
 }
 
-
 let globalGameActive = false;
 
 namespace menu {
@@ -82,6 +81,10 @@ namespace menu {
     fo1.setPosition(10, 119);
     fo2.setPosition(fo1.x + cardSpacing, fo1.y);
     cu2.setPosition(fo1.x, fo1.y - 15);
+
+    b1.setPosition(10, 119);
+    b2.setPosition(fo1.x + cardSpacing, fo1.y);
+    cu.setPosition(fo1.x, fo1.y - 15);
 
     // listeners
     forever(function () {
@@ -136,12 +139,14 @@ namespace menu {
 
             controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
                 if (onStandby) {
-                    let b;
-                    v = true;
 
+
+                    let b;
                     if (curPos == 1) b = fo1;
                     if (curPos == 2) b = fo2;
 
+                    cu.follow(cu2, 0);
+                    animation.runMovementAnimation(cu, animation.animationPresets(animation.bobbing), 2000, false);
                     b.setPosition(hyacinth.centerScreenX, hyacinth.centerScreenY);
                     color.startFade(color.White, color.originalPalette, 500);
                     scene.cameraShake(2, 500);
