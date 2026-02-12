@@ -34,6 +34,9 @@ namespace gameUtils {
     export let facing = "";
     export let parsedPlayer: Sprite;
     export let canInput = true;
+    export let hx = 0;
+    export let hy = 0;
+    export let shakeIntensity = 0;
 
     export enum Events {
         ATTACK
@@ -59,29 +62,52 @@ namespace gameUtils {
         if (event == Events.ATTACK) {
             let addX: number;
             let addY: number;
-            let offset = 10;
+            let addVX: number;
+            let addVY: number;
+        
+            const offset = 10;
+            const vOffset = 140;
+            const delay = 240;
+
+            for (let t = 0; t < 14; t++) {
+                gameUtils.shakeIntensity = t;
+                pause(100);
+            }
+
+            hx = 0;
+            hy = 0;
+            pause(delay);
+
             switch (facing) {
                 case ("down"): {
                     addX = 0;
                     addY = offset;
+                    addVX = 0;
+                    addVY = vOffset;
                     break;
                 }
 
                 case ("up"): {
                     addX = 0;
                     addY = -offset;
+                    addVX = 0;
+                    addVY = -vOffset;
                     break;
                 }
 
                 case ("left"): {
                     addX = -offset;
                     addY = 0;
+                    addVX = -vOffset;
+                    addVY = 0;
                     break;
                 }
 
                 case ("right"): {
                     addX = offset;
                     addY = 0;
+                    addVX = vOffset;
+                    addVY = 0;
                     break;
                 }
             }
@@ -108,9 +134,13 @@ namespace gameUtils {
                 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
             `, SpriteKind.Placeholder);
             goober.setPosition(finalX, finalY);
+            goober.setVelocity(addVX, addVY);
+            hx = 100;
+            hy = 100;
+            shakeIntensity = 0;
         }
     }
-
+    
     forever(function () {
         controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
             gameUtils.facing = "left";
@@ -128,15 +158,20 @@ namespace gameUtils {
             gameUtils.facing = "up";
         });
     });
+
+    forever( function () {
+        scene.cameraShake(shakeIntensity, 40);
+        info.setScore(shakeIntensity);
+    });
 }
 
 namespace gameScript {
     hyacinth.setDeveloper(true);
 
     export function bootstrap() {
-        let xSpeed = 100;
-        let ySpeed = 100;
         gameUtils.canInput = false;
+        gameUtils.hx = 100;
+        gameUtils.hy = 100;
 
         color.pauseUntilFadeDone();
         gameUtils.clearMenu();
@@ -154,7 +189,7 @@ namespace gameScript {
         forever(function () {
             player.sayText(gameUtils.facing);
 
-            controller.moveSprite(player, xSpeed, ySpeed);
+            controller.moveSprite(player, gameUtils.hx, gameUtils.hy);
 
             controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
                 if (gameUtils.canInput) {
