@@ -1,5 +1,3 @@
-hyacinth.setDeveloper(true);
-
 namespace menuAssets {
     export let button = img`
         1111111111111111

@@ -31,14 +31,20 @@ namespace gameAssets {
 }
 
 namespace gameUtils {
+    export let facing = "";
+    export let parsedPlayer: Sprite;
+    export let canInput = true;
+
+    export enum Events {
+        ATTACK
+    }
+
     export function clearMenu() {
         for (let value of menu.menuSprites) {
             sprites.destroy(value);
             if (hyacinth.isDevelopmentEnvironment(true)) console.log(value.id + " was cleared successfully!");
         }
     }
-
-    export let facing = "";
 
     export function parsePlayer() {
         let finalValue;
@@ -49,7 +55,61 @@ namespace gameUtils {
         parsedPlayer = finalValue;
     }
 
-    export let parsedPlayer: Sprite;
+    export function input(event: Events, target: Sprite) {
+        if (event == Events.ATTACK) {
+            let addX: number;
+            let addY: number;
+            let offset = 10;
+            switch (facing) {
+                case ("down"): {
+                    addX = 0;
+                    addY = offset;
+                    break;
+                }
+
+                case ("up"): {
+                    addX = 0;
+                    addY = -offset;
+                    break;
+                }
+
+                case ("left"): {
+                    addX = -offset;
+                    addY = 0;
+                    break;
+                }
+
+                case ("right"): {
+                    addX = offset;
+                    addY = 0;
+                    break;
+                }
+            }
+
+            let finalX: number = target.x + addX;
+            let finalY: number = target.y + addY;
+
+            let goober = sprites.create(img`
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+            `, SpriteKind.Placeholder);
+            goober.setPosition(finalX, finalY);
+        }
+    }
 
     forever(function () {
         controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -71,9 +131,12 @@ namespace gameUtils {
 }
 
 namespace gameScript {
+    hyacinth.setDeveloper(true);
+
     export function bootstrap() {
         let xSpeed = 100;
         let ySpeed = 100;
+        gameUtils.canInput = false;
 
         color.pauseUntilFadeDone();
         gameUtils.clearMenu();
@@ -86,13 +149,18 @@ namespace gameScript {
 
         let player = sprites.create(gameAssets.playerImage, SpriteKind.Player);
         player.setPosition(hyacinth.centerScreenX, hyacinth.centerScreenY);
-
-
+        gameUtils.canInput = true;
 
         forever(function () {
             player.sayText(gameUtils.facing);
 
             controller.moveSprite(player, xSpeed, ySpeed);
+
+            controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+                if (gameUtils.canInput) {
+                    gameUtils.input(gameUtils.Events.ATTACK, player);
+                }
+            });
         });
     }
 }
