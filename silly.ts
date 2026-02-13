@@ -28,6 +28,24 @@ namespace gameAssets {
         f f f f f f
         f f f f f f
     `;
+    export let emptyImage = img`
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+    `;
 }
 
 namespace gameUtils {
@@ -59,86 +77,7 @@ namespace gameUtils {
     }
 
     export function input(event: Events, target: Sprite) {
-        if (event == Events.ATTACK) {
-            let addX: number;
-            let addY: number;
-            let addVX: number;
-            let addVY: number;
         
-            const offset = 10;
-            const vOffset = 140;
-            const delay = 240;
-
-            for (let t = 0; t < 14; t++) {
-                gameUtils.shakeIntensity = t;
-                pause(100);
-            }
-
-            hx = 0;
-            hy = 0;
-            pause(delay);
-
-            switch (facing) {
-                case ("down"): {
-                    addX = 0;
-                    addY = offset;
-                    addVX = 0;
-                    addVY = vOffset;
-                    break;
-                }
-
-                case ("up"): {
-                    addX = 0;
-                    addY = -offset;
-                    addVX = 0;
-                    addVY = -vOffset;
-                    break;
-                }
-
-                case ("left"): {
-                    addX = -offset;
-                    addY = 0;
-                    addVX = -vOffset;
-                    addVY = 0;
-                    break;
-                }
-
-                case ("right"): {
-                    addX = offset;
-                    addY = 0;
-                    addVX = vOffset;
-                    addVY = 0;
-                    break;
-                }
-            }
-
-            let finalX: number = target.x + addX;
-            let finalY: number = target.y + addY;
-
-            let goober = sprites.create(img`
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-                3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-            `, SpriteKind.Placeholder);
-            goober.setPosition(finalX, finalY);
-            goober.setVelocity(addVX, addVY);
-            hx = 100;
-            hy = 100;
-            shakeIntensity = 0;
-        }
     }
     
     forever(function () {
@@ -165,6 +104,41 @@ namespace gameUtils {
     });
 }
 
+namespace inventory {
+    let heldItem: Items = null;
+    let readout: Sprite = sprites.create(gameAssets.emptyImage, SpriteKind.VisualEffect);
+    readout.z = -3;
+
+    export enum Items {
+        TEST
+    }
+
+    export function getItem(): Items {
+        return heldItem;
+    }
+
+    export function setItem(newItem: Items) {
+        heldItem = newItem;
+    }
+
+    export function parseItemToString(value: Items): string {
+        let result = "";
+
+        switch(heldItem) {
+            case (Items.TEST): {
+                result = "test";
+            }
+        }
+
+        return result;
+    }
+
+    forever( function () {
+        readout.setPosition(30, 30);
+        readout.sayText(parseItemToString(getItem()), Infinity, false, 15, 1);
+    });
+}
+
 namespace gameScript {
     hyacinth.setDeveloper(true);
 
@@ -185,9 +159,11 @@ namespace gameScript {
         let player = sprites.create(gameAssets.playerImage, SpriteKind.Player);
         player.setPosition(hyacinth.centerScreenX, hyacinth.centerScreenY);
         gameUtils.canInput = true;
+        inventory.setItem(inventory.Items.TEST);
+        scene.cameraFollowSprite(player);
 
         forever(function () {
-            player.sayText(gameUtils.facing);
+//            player.sayText(inventory.parseItemToString(inventory.getItem()));
 
             controller.moveSprite(player, gameUtils.hx, gameUtils.hy);
 
